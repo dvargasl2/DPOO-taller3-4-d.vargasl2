@@ -12,29 +12,49 @@ import uniandes.dpoo.aerolinea.exceptions.AeropuertoDuplicadoException;
  */
 public class Aeropuerto
 {
-    // TODO completar
-    
+	
+	private String nombre;
+	private String codigo;
+	private String nombreCiudad;
+	private double latitud;
+	private double longitud;
+	private static Set<String> codigosUtilizados = new HashSet <String>(); 
+	private static int RADIO_TERRESTRE = 6871;
+	
+	public Aeropuerto(String nombre, String codigo, String nombreCiudad, double latitud, double longitud ) {
+		
+		this.nombre = nombre;
+		this.codigo = codigo;
+		this.nombreCiudad = nombreCiudad;
+		this.latitud = latitud;
+		this.longitud = longitud;
+		
+		
+	}
+	public String getnombre() {
+		return this.nombre;
+	}
+	
+	public String getCodigo() {
+		return this.codigo;
+	}
+	public String getNombreCiudad() {
+		return this.nombreCiudad;
+	}
+	public double getLatitud() {
+		return this.latitud;
+	}
+	public double gotLongitud() {
+		return this.longitud;
+	}
 
-    /**
-     * Este método calcula la distancia *aproximada* entre dos aeropuertos. Hay fórmulas más precisas pero esta es suficientemente buena para el caso de la aerolínea.
-     * 
-     * Este método asume que las coordenadas (latitud y longitud) de los aeropuertos están expresadas en la forma que las hace más cercanas. Si no es así, la distancia entre
-     * los dos aeropuertos podría ser la más larga posible.
-     * 
-     * Por ejemplo, dependiendo de cómo estén expresadas las longitudes, la distancia calculada entre Narita (Tokyo) y El Dorado (Bogotá) podría ser atravesando el Pacífico, o
-     * atravesando el Atlántico y Asia (el camino largo)
-     * 
-     * @param aeropuerto1
-     * @param aeropuerto2
-     * @return La distancia en kilómetros entre los puntos
-     */
     public static int calcularDistancia( Aeropuerto aeropuerto1, Aeropuerto aeropuerto2 )
     {
         // Convertir los ángulos a radianes para facilitar las operaciones trigonométricas
         double latAeropuerto1 = Math.toRadians( aeropuerto1.getLatitud( ) );
-        double lonAeropuerto1 = Math.toRadians( aeropuerto1.getLongitud( ) );
+        double lonAeropuerto1 = Math.toRadians( aeropuerto1.getLatitud( ) );
         double latAeropuerto2 = Math.toRadians( aeropuerto2.getLatitud( ) );
-        double lonAeropuerto2 = Math.toRadians( aeropuerto2.getLongitud( ) );
+        double lonAeropuerto2 = Math.toRadians( aeropuerto2.getLatitud( ) );
 
         // Calcular la distancia debido a la diferencia de latitud y de longitud
         double deltaX = ( lonAeropuerto2 - lonAeropuerto1 ) * Math.cos( ( latAeropuerto1 + latAeropuerto2 ) / 2 );
