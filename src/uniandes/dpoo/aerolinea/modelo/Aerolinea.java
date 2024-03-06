@@ -17,6 +17,9 @@ import uniandes.dpoo.aerolinea.persistencia.IPersistenciaAerolinea;
 import uniandes.dpoo.aerolinea.persistencia.IPersistenciaTiquetes;
 import uniandes.dpoo.aerolinea.persistencia.TipoInvalidoException;
 import uniandes.dpoo.aerolinea.tiquetes.Tiquete;
+import uniandes.dpoo.aerolinea.modelo.tarifas.CalculadoraTarifasTemporadaAlta;
+import uniandes.dpoo.aerolinea.modelo.tarifas.CalculadoraTarifasTemporadaBaja;
+
 
 /**
  * En esta clase se organizan todos los aspectos relacionados con una Aerolínea.
@@ -164,7 +167,12 @@ public class Aerolinea
     public Vuelo getVuelo( String codigoRuta, String fechaVuelo )
     {
         // TODO implementar
-        return null;
+    	for (Vuelo vuelo: vuelos) {
+    		if(vuelo.getRuta().getCodigoRuta().equals(codigoRuta) && vuelo.getFecha().equals(fechaVuelo)) {
+    			return vuelo;
+    		}
+    	}
+    	return null;
     }
 
     /**
@@ -183,7 +191,11 @@ public class Aerolinea
     public Collection<Tiquete> getTiquetes( )
     {
         // TODO implementar
-        return null;
+    	List<Tiquete> tiquetes = new ArrayList<>();
+    	for(Vuelo vuelo: vuelos) {
+    		tiquetes.addAll(vuelo.getTiquetes());
+    	}
+        return tiquetes;
 
     }
 
@@ -204,6 +216,8 @@ public class Aerolinea
     public void cargarAerolinea( String archivo, String tipoArchivo ) throws TipoInvalidoException, IOException, InformacionInconsistenteException
     {
         // TODO implementar
+    	IPersistenciaAerolinea cargapers = CentralPersistencia.getPersistenciaAerolinea( tipoArchivo );
+    	cargapers.cargarAereolinea( archivo, this );
     }
 
     /**
@@ -216,6 +230,8 @@ public class Aerolinea
     public void salvarAerolinea( String archivo, String tipoArchivo ) throws TipoInvalidoException, IOException
     {
         // TODO implementar
+    	IPersistenciaAerolinea cargapers = CentralPersistencia.getPersistenciaAerolinea( tipoArchivo );
+    	cargapers.salvarAerolinea( archivo, this );
     }
 
     /**
@@ -263,9 +279,25 @@ public class Aerolinea
      * @param nombreAvion El nombre del avión que realizará el vuelo
      * @throws Exception Lanza esta excepción si hay algún problema con los datos suministrados
      */
-    public void programarVuelo( String fecha, String codigoRuta, String nombreAvion ) throws Exception
+    public void programarVuelo( String fecha, String codigoRuta, String nombreAvion ) throws InformacionInconsistenteException
     {
         // TODO Implementar el método
+    	Ruta ruta = rutas.get(codigoRuta);
+    	Avion avion = null;
+    	for(Avion avioncito:aviones) {
+    		if(avioncito.getNombre().equals(nombreAvion)) {
+    			avion = avioncito; break;
+    		}
+    	}
+    	if (avion == null) {
+    		throw new InformacionInconsistenteException("No existe un avion con el nombre otorgado");
+    	}
+    	for(Vuelo vuelo: vuelos) {
+    		if(vuelo.getAvion().equals(avion)&&vuelo.getFecha().equals(fecha)) {
+    			throw new InformacionInconsistenteException("Este avion ya tiene otro vuelo programado para la misma fecha");
+    		}
+    	}
+    	vuelos.add(new Vuelo(ruta, fecha, avion));
     }
 
     /**
@@ -286,7 +318,18 @@ public class Aerolinea
     public int venderTiquetes( String identificadorCliente, String fecha, String codigoRuta, int cantidad ) throws VueloSobrevendidoException, Exception
     {
         // TODO Implementar el método
-        return -1;
+    	Vuelo vuelo = getVuelo( codigoRuta, fecha );
+        if( vuelo == null ){
+            throw new InformacionInconsistenteException( "No existe un vuelo con la informacion dada (fecha y ruta)" );
+        }
+        Cliente cliente = getCliente(identificadorCliente);
+        if(cliente==null) {
+        	throw new InformacionInconsistenteException("No existe un cliente con ese id");
+        }
+        Ruta ruta =vuelo.getRuta();
+        if (ruta.getHoraSalida().substring(5,7).equals("06")||ruta.getHoraSalida().substring(5,7).equals("07")||ruta.getHoraSalida().substring(5,7).equals("08"))
+        	CalculadoraTarifasTemporadaAlta calculadora = new CalculadoraTarifasTemporadaAlta();
+        	return vuelo.venderTiquetes(cliente, calculadora, cantidad);
     }
 
     /**

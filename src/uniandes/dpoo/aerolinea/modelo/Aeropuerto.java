@@ -48,13 +48,13 @@ public class Aeropuerto
 		return this.longitud;
 	}
 
-    public static int calcularDistancia( Aeropuerto aeropuerto1, Aeropuerto aeropuerto2 )
+    public static int calcularDistancia( Aereopuerto aereopuerto, Aereopuerto aereopuerto2 )
     {
         // Convertir los ángulos a radianes para facilitar las operaciones trigonométricas
-        double latAeropuerto1 = Math.toRadians( aeropuerto1.getLatitud( ) );
-        double lonAeropuerto1 = Math.toRadians( aeropuerto1.getLatitud( ) );
-        double latAeropuerto2 = Math.toRadians( aeropuerto2.getLatitud( ) );
-        double lonAeropuerto2 = Math.toRadians( aeropuerto2.getLatitud( ) );
+        double latAeropuerto1 = Math.toRadians( aereopuerto.getLatitud() );
+        double lonAeropuerto1 = Math.toRadians( aereopuerto.getLatitud() );
+        double latAeropuerto2 = Math.toRadians( aereopuerto2.getLatitud() );
+        double lonAeropuerto2 = Math.toRadians( aereopuerto2.getLatitud() );
 
         // Calcular la distancia debido a la diferencia de latitud y de longitud
         double deltaX = ( lonAeropuerto2 - lonAeropuerto1 ) * Math.cos( ( latAeropuerto1 + latAeropuerto2 ) / 2 );
